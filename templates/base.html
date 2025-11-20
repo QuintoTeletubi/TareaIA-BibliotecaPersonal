@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Biblioteca Personal{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navegación Tecnológica -->
+    {% if current_user.is_authenticated %}
+    <nav class="navbar navbar-expand-lg navbar-dark tech-navbar">
+        <div class="container-fluid px-4">
+            <div class="d-flex w-100 align-items-center">
+                <!-- Sección Izquierda: Brand/Título (Extremo Izquierdo) -->
+                <div class="navbar-brand-section">
+                    <a class="navbar-brand-clean" href="{{ url_for('dashboard') }}">
+                        <i class="fas fa-book-open brand-icon-clean"></i>
+                        <span class="brand-text-clean">Biblioteca Personal</span>
+                    </a>
+                </div>
+
+                <!-- Botón móvil -->
+                <button class="navbar-toggler clean-toggler d-lg-none ms-auto me-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <!-- Sección Central: Navegación -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <div class="navbar-nav-center mx-auto">
+                        <ul class="navbar-nav clean-nav">
+                            <li class="nav-item">
+                                <a class="nav-link clean-nav-link" href="{{ url_for('dashboard') }}">
+                                    <i class="fas fa-home me-2"></i>Inicio
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link clean-nav-link" href="{{ url_for('books') }}">
+                                    <i class="fas fa-book me-2"></i>Mis Libros
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link clean-nav-link" href="{{ url_for('add_book') }}">
+                                    <i class="fas fa-plus-circle me-2"></i>Agregar
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle clean-nav-link" href="#" id="exportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-download me-2"></i>Exportar
+                                </a>
+                                <ul class="dropdown-menu export-dropdown">
+                                    <li><a class="dropdown-item" href="{{ url_for('export_excel') }}">
+                                        <i class="fas fa-file-excel text-success me-2"></i>Excel
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('export_pdf') }}">
+                                        <i class="fas fa-file-pdf text-danger me-2"></i>PDF
+                                    </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sección Derecha: Perfil (Extremo Derecho) -->
+                <div class="navbar-user-section">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle user-clean" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-2"></i>{{ current_user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end user-dropdown">
+                            <li><h6 class="dropdown-header">
+                                <i class="fas fa-user-circle me-2"></i>{{ current_user.username }}
+                            </h6></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Contenido principal -->
+    <main class="container mt-4">
+        <!-- Mensajes flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light text-center text-muted py-3 mt-5">
+        <div class="container">
+            <p>&copy; 2025 Biblioteca Personal. Desarrollado con Flask.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                if (alert.classList.contains('show')) {
+                    alert.classList.remove('show');
+                    setTimeout(() => alert.remove(), 150);
+                }
+            });
+        }, 5000);
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

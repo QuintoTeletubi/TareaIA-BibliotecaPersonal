@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Libro - Biblioteca Personal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">
+                    <i class="fas fa-edit"></i> Editar Libro
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="title" class="form-label">Título *</label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   value="{{ book.title }}" required>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label for="author" class="form-label">Autor *</label>
+                            <input type="text" class="form-control" id="author" name="author" 
+                                   value="{{ book.author }}" required>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label for="genre" class="form-label">Género *</label>
+                            <select class="form-select" id="genre" name="genre" required>
+                                <option value="">Seleccionar género...</option>
+                                <option value="Ficción" {{ 'selected' if book.genre == 'Ficción' }}>Ficción</option>
+                                <option value="No ficción" {{ 'selected' if book.genre == 'No ficción' }}>No ficción</option>
+                                <option value="Romance" {{ 'selected' if book.genre == 'Romance' }}>Romance</option>
+                                <option value="Misterio" {{ 'selected' if book.genre == 'Misterio' }}>Misterio</option>
+                                <option value="Thriller" {{ 'selected' if book.genre == 'Thriller' }}>Thriller</option>
+                                <option value="Ciencia ficción" {{ 'selected' if book.genre == 'Ciencia ficción' }}>Ciencia ficción</option>
+                                <option value="Fantasía" {{ 'selected' if book.genre == 'Fantasía' }}>Fantasía</option>
+                                <option value="Biografía" {{ 'selected' if book.genre == 'Biografía' }}>Biografía</option>
+                                <option value="Historia" {{ 'selected' if book.genre == 'Historia' }}>Historia</option>
+                                <option value="Autoayuda" {{ 'selected' if book.genre == 'Autoayuda' }}>Autoayuda</option>
+                                <option value="Educativo" {{ 'selected' if book.genre == 'Educativo' }}>Educativo</option>
+                                <option value="Tecnología" {{ 'selected' if book.genre == 'Tecnología' }}>Tecnología</option>
+                                <option value="Arte" {{ 'selected' if book.genre == 'Arte' }}>Arte</option>
+                                <option value="Cocina" {{ 'selected' if book.genre == 'Cocina' }}>Cocina</option>
+                                <option value="Viajes" {{ 'selected' if book.genre == 'Viajes' }}>Viajes</option>
+                                <option value="Otro" {{ 'selected' if book.genre == 'Otro' }}>Otro</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_read" name="is_read"
+                                       {{ 'checked' if book.is_read }}>
+                                <label class="form-check-label" for="is_read">
+                                    <i class="fas fa-check-circle"></i> Ya he leído este libro
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3" id="read_date_group" {{ 'style=display:block' if book.is_read else 'style=display:none' }}>
+                            <label for="read_date" class="form-label">Fecha de lectura</label>
+                            <input type="date" class="form-control" id="read_date" name="read_date"
+                                   value="{{ book.read_date.strftime('%Y-%m-%d') if book.read_date }}">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3" id="rating_group" {{ 'style=display:block' if book.is_read else 'style=display:none' }}>
+                            <label for="rating" class="form-label">Calificación</label>
+                            <select class="form-select" id="rating" name="rating">
+                                <option value="">Sin calificar</option>
+                                <option value="1" {{ 'selected' if book.rating == 1 }}>⭐ 1 estrella</option>
+                                <option value="2" {{ 'selected' if book.rating == 2 }}>⭐⭐ 2 estrellas</option>
+                                <option value="3" {{ 'selected' if book.rating == 3 }}>⭐⭐⭐ 3 estrellas</option>
+                                <option value="4" {{ 'selected' if book.rating == 4 }}>⭐⭐⭐⭐ 4 estrellas</option>
+                                <option value="5" {{ 'selected' if book.rating == 5 }}>⭐⭐⭐⭐⭐ 5 estrellas</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label for="comment" class="form-label">Comentarios (opcional)</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="3" 
+                                     placeholder="Escribe tus pensamientos sobre el libro...">{{ book.comment or '' }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('books') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Actualizar Libro
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('is_read').addEventListener('change', function() {
+    const readDateGroup = document.getElementById('read_date_group');
+    const ratingGroup = document.getElementById('rating_group');
+    
+    if (this.checked) {
+        readDateGroup.style.display = 'block';
+        ratingGroup.style.display = 'block';
+    } else {
+        readDateGroup.style.display = 'none';
+        ratingGroup.style.display = 'none';
+        document.getElementById('read_date').value = '';
+        document.getElementById('rating').value = '';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Biblioteca Personal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="welcome-header">
+            <h1 class="display-5 fw-bold text-primary mb-2">
+                ¡Bienvenido, {{ current_user.username }}!
+            </h1>
+            <p class="lead text-muted mb-4">Gestiona tu biblioteca personal de manera fácil y organizada</p>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="row mb-5">
+    <div class="col-md-4 mb-3">
+        <div class="stat-card card-total">
+            <div class="card-body text-center">
+                <div class="stat-icon mb-3">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h2 class="stat-number">{{ stats.total }}</h2>
+                <p class="stat-label">Total de Libros</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="stat-card card-read">
+            <div class="card-body text-center">
+                <div class="stat-icon mb-3">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 class="stat-number">{{ stats.read }}</h2>
+                <p class="stat-label">Libros Leídos</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="stat-card card-pending">
+            <div class="card-body text-center">
+                <div class="stat-icon mb-3">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <h2 class="stat-number">{{ stats.unread }}</h2>
+                <p class="stat-label">Por Leer</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Libros recientes -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header modern-card-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="header-icon me-3">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h5 class="mb-0 fw-bold">Libros Recientes</h5>
+                </div>
+                {% if books %}
+                <a href="{{ url_for('books') }}" class="btn btn-sm btn-primary rounded-pill">
+                    Ver todos <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if books %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Autor</th>
+                                    <th>Género</th>
+                                    <th>Estado</th>
+                                    <th>Calificación</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for book in books %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ book.title }}</strong>
+                                    </td>
+                                    <td>{{ book.author }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ book.genre }}</span>
+                                    </td>
+                                    <td>
+                                        {% if book.is_read %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check"></i> Leído
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock"></i> Por leer
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if book.rating %}
+                                            {% for i in range(1, 6) %}
+                                                {% if i <= book.rating %}
+                                                    <i class="fas fa-star text-warning"></i>
+                                                {% else %}
+                                                    <i class="far fa-star text-muted"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="text-muted">Sin calificar</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No tienes libros registrados</h5>
+                        <p class="text-muted">Comienza agregando tu primer libro a la biblioteca</p>
+                        <a href="{{ url_for('add_book') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Agregar Primer Libro
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
