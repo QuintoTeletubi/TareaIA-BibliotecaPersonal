@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash
 from models import db, User, Book
 from datetime import datetime
-import pandas as pd
+from openpyxl import Workbook
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -262,17 +262,31 @@ def export_excel():
     # Convertir libros a lista de diccionarios
     data = [book.to_dict() for book in books]
     
-    # Crear DataFrame de pandas
-    df = pd.DataFrame(data)
-    
-    # Crear archivo Excel
+    # Crear archivo Excel con openpyxl
     filename = f'biblioteca_{current_user.username}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
     filepath = os.path.join('exports', filename)
     
     # Asegurar que el directorio existe
     os.makedirs('exports', exist_ok=True)
     
-    df.to_excel(filepath, index=False, sheet_name='Mi Biblioteca')
+    # Crear workbook y worksheet
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Mi Biblioteca'
+    
+    # Escribir encabezados
+    if data:
+        headers = list(data[0].keys())
+        for col, header in enumerate(headers, 1):
+            ws.cell(row=1, column=col, value=header)
+        
+        # Escribir datos
+        for row, book_data in enumerate(data, 2):
+            for col, header in enumerate(headers, 1):
+                ws.cell(row=row, column=col, value=book_data[header])
+    
+    # Guardar archivo
+    wb.save(filepath)
     
     return send_file(filepath, as_attachment=True, download_name=filename)
 

@@ -22,7 +22,7 @@ $PYTHON_CMD --version
 
 echo "🔧 Instalando dependencias..."
 $PIP_CMD install --upgrade pip
-$PIP_CMD install --no-cache-dir -r requirements.txtsh
+$PIP_CMD install --no-cache-dir --break-system-packages -r requirements.txtsh
 # Render Build Script
 
 echo "� Verificando versión de Python..."
