@@ -9,9 +9,9 @@
 - **Root Directory:** (dejar vacío)
 
 ### 2. Configuración de Build
-- **Runtime:** `Python 3`
+- **Runtime:** `Python 3.11.0`
 - **Build Command:** `./build.sh`
-- **Start Command:** `gunicorn app:app`
+- **Start Command:** `gunicorn app:app --host=0.0.0.0 --port=$PORT`
 
 ### 3. Variables de Entorno (Environment Variables)
 ```

@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Render Build Script
 
-# Instalar dependencias
+echo "🔧 Instalando dependencias..."
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install --no-cache-dir -r requirements.txt
 
-# Crear directorio para exports si no existe
+echo "📁 Creando directorios necesarios..."
 mkdir -p exports
+
+echo "✅ Build completado"
