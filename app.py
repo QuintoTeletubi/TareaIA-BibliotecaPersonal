@@ -3,13 +3,24 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash
 from models import db, User, Book
 from datetime import datetime
-import pandas as pd
-from reportlab.lib.pagesizes import letter, A4
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib import colors
-from reportlab.lib.units import inch
 import os
+
+# Importaciones opcionales para exportaciones (solo si están disponibles)
+try:
+    import pandas as pd
+    HAS_PANDAS = True
+except ImportError:
+    HAS_PANDAS = False
+
+try:
+    from reportlab.lib.pagesizes import letter, A4
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import inch
+    HAS_REPORTLAB = True
+except ImportError:
+    HAS_REPORTLAB = False
 
 # Configuración de la aplicación
 app = Flask(__name__)
@@ -250,6 +261,10 @@ def delete_book(id):
 @login_required
 def export_excel():
     """Exportar biblioteca a Excel"""
+    if not HAS_PANDAS:
+        flash('Exportación a Excel no disponible en esta versión', 'warning')
+        return redirect(url_for('books'))
+        
     books = Book.query.filter_by(user_id=current_user.id).all()
     
     if not books:
@@ -277,6 +292,10 @@ def export_excel():
 @login_required
 def export_pdf():
     """Exportar biblioteca a PDF"""
+    if not HAS_REPORTLAB:
+        flash('Exportación a PDF no disponible en esta versión', 'warning')
+        return redirect(url_for('books'))
+        
     books = Book.query.filter_by(user_id=current_user.id).all()
     
     if not books:
