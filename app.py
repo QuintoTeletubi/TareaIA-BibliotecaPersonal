@@ -17,12 +17,15 @@ app = Flask(__name__)
 # Configuración para producción y desarrollo
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tu_clave_secreta_super_segura_aqui')
 
-# Base de datos: SQLite para desarrollo, PostgreSQL para producción
-if os.environ.get('VERCEL'):
-    # En Vercel, usar base de datos en memoria (temporal)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+# Base de datos: PostgreSQL para Render, SQLite para desarrollo
+database_url = os.environ.get('DATABASE_URL')
+if database_url:
+    # Render PostgreSQL
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
-    # En desarrollo local
+    # Desarrollo local
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///biblioteca.db'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -343,11 +346,11 @@ def export_pdf():
     
     return send_file(filepath, as_attachment=True, download_name=filename)
 
-# Inicializar base de datos en Vercel
-if os.environ.get('VERCEL'):
-    with app.app_context():
+# Inicializar base de datos automáticamente
+with app.app_context():
+    try:
         db.create_all()
-        # Crear usuario demo para Vercel
+        # Crear usuario demo si no existe
         if not User.query.filter_by(username='demo').first():
             demo_user = User(
                 username='demo',
@@ -356,6 +359,10 @@ if os.environ.get('VERCEL'):
             )
             db.session.add(demo_user)
             db.session.commit()
+            print("Usuario demo creado: demo/demo123")
+    except Exception as e:
+        print(f"Error inicializando BD: {e}")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
