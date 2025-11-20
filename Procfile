@@ -1,1 +1,2 @@
-web: gunicorn app:app --bind 0.0.0.0:$PORT
+# Render Web Service Configuration
+web: gunicorn app:app -b 0.0.0.0:$PORT
